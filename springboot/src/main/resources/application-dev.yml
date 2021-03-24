@@ -1,0 +1,69 @@
+# spring boot 2.x 的ContextPath配置有变化：
+server:
+  servlet:
+    context-path: /quartz
+  # 服务端口
+  port: 8080
+  # session最大超时时间(分钟)，默认为30
+  session-timeout: 60
+  # 该服务绑定IP地址，启动服务器时如本机不是该IP地址则抛出异常启动失败，只有特殊需求的情况下才配置
+  #server.address: 192.168.1.66
+  # tomcat最大线程数，默认为200
+  tomcat.max-threads: 100
+  # tomcat的URI编码
+  tomcat.uri-encoding: UTF-8
+
+spring:
+  mvc:
+    static-path-pattern: /**
+  thymeleaf:
+    mode: HTML
+    cache: false
+    cache-period: 0
+    template:
+      cache: false
+  #dev tools
+  devtools:
+    livereload:
+      enabled: true
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/quartz?characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database:  MYSQL
+    show-sql:  true
+    hibernate.ddl-auto:  update
+    # 新特性
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  # quartz任务配置
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: clusteredScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            dataSource: quartzDataSource
+            tablePrefix: QRTZ_
+            # 打开集群配置
+            isClustered: true
+            # 设置集群检查间隔100s
+            clusterCheckinInterval: 10000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
